@@ -12,6 +12,6 @@ install
 
 ```bash
 cd ~/.config/cmus/scripts/songChange.py
-git clone https://github.com/wdog/cmus_notify
+git clone git@github.com:wdog/cmus_notify.git
 chmod +x songChange.py
 ```
