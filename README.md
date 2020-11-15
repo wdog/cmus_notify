@@ -1,17 +1,25 @@
+![notification](https://user-images.githubusercontent.com/42554663/99198852-0cae8c00-27bd-11eb-9eb1-117fb6a155b9.png)
+
 # cmus_notify
-Simple notification (notify-send) on song change for cmus
+cmus_notify is a python script which sends a notification on song change using notify-send.
 
 
-add in your ~/config/cmus/rc
+# Installation
+
+You must have stagger in your path.
+You can install it using pip.
+
+```
+$ pip install --user stagger
+$ mkdir -p ~/.config/cmus/scripts
+$ curl -o ~/.config/cmus/scripts/songChange.py https://raw.githubusercontent.com/wdog/cmus_notify/main/songChange.py
+$ chmod +x ~/.config/cmus/scripts/songChange.py
+
+```
+
+Once you have stagger installed, just add this line to your `~/.config/cmus/rc` or `~/.config/cmus/autosave`.
 
 ```
 set status_display_program=~/.config/cmus/scripts/songChange.py
-```
 
-install
-
-```bash
-cd ~/.config/cmus/scripts/songChange.py
-git clone git@github.com:wdog/cmus_notify.git
-chmod +x songChange.py
 ```
