@@ -10,7 +10,7 @@ set status_display_program=~/.config/cmus/scripts/songChange.py
 
 install
 
-```
+```bash
 cd ~/.config/cmus/scripts/songChange.py
 git clone https://github.com/wdog/cmus_notify
 chmod +x songChange.py
