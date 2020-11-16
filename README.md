@@ -1,4 +1,5 @@
-![notification](screenshots/example1.png)
+![notification](screenshots/example1.jpg)
+
 
 # cmus_notify
 cmus_notify is a python script which sends a notification on song change using notify-send.
