@@ -1,75 +1,65 @@
 #!/usr/bin/python
 
-# title          :songChange.py
-# description    :Uses notify send for title artist and album cover
-# author         :wdog666@gmail.com
-# date           :20201115
-# version        :0.1
-# usage          :insert into rc file:
-#                :set status_display_program=~/.config/cmus/songChange.py
-
+# title          : songChange.py
+# description    : Uses notify send for title artist and album cover
+# author         : wdog666@gmail.com
+# date           : 20201116
+# version        : 0.2
 # notes          : requires stagger
-# python_version :3.8.6
+# python_version : 3.8.6
 # =============================================================================
 
 import os
 import stagger
 
 
-# +-------------------+
-# | Send notification |
-# +-------------------+
+class CmusNotify:
+    def __init__(self):
+        self.get_filename_path()
+        self.get_tags()
+        self.extract_cover()
+        self.notify(self.tags.title, self.tags.album,
+                    self.tags.artist, self.icon)
 
+    # +----------------------------+
+    # | Extract Image from mp3 tag |
+    # +----------------------------+
 
-def notify(song, album, artist, icon='music'):
-    command = f'''
-    notify-send -i "{icon}" "🎶 {song}" "<i>💿 {album}</i>\n<b>🕺 {artist}</b>"
+    def extract_cover(self):
+        if (self.tags.picture):
+            data = self.tags[stagger.id3.APIC][0].data
+            self.icon = '/tmp/xyz.jpg'
+            with open(self.icon, "wb") as outfile:
+                outfile.write(data)
+        else:
+            self.icon = 'music'
+
+    # +------------------------------+
+    # | Get Object Tag from filepath |
+    # +------------------------------+
+
+    def get_tags(self):
+        self.tags = stagger.read_tag(self.filepath)
+
+    # +----------------------------------+
+    # | Get Coplete path of current song |
+    # +----------------------------------+
+
+    def get_filename_path(self):
+        cmd = "cmus-remote -Q|grep file|awk '{$1=\"\"; print $0}'"
+        self.filepath = os.popen(cmd).read().strip()
+
+    # +-------------------------+
+    # | Call system notify-send |
+    # +-------------------------+
+
+    def notify(self, song, album, artist, icon='music'):
+        command = f'''
+        notify-send -i "{icon}" "🎶 {song}" \
+        "\n<i>💿 {album}</i>\n<b>🕺 {artist}</b>"
 '''
-    os.system(command)
-
-
-# +-----------------------------------------------+
-# | Extract Images to display from TAG if present |
-# +-----------------------------------------------+
-
-
-def get_cover(mp3):
-    if (mp3.picture):
-        data = mp3[stagger.id3.APIC][0].data
-        icon = '/tmp/xyz.jpg'
-        with open(icon, "wb") as outfile:
-            outfile.write(data)
-    else:
-        " default icon "
-        icon = 'music'
-    return icon
-
-
-# +---------------+
-# | Main function |
-# +---------------+
-
-def main(filename):
-    mp3 = stagger.read_tag(filename)
-
-    icon = get_cover(mp3)
-    notify(mp3.title, mp3.album, mp3.artist, icon)
-
-
-# +--------------------------------------------------------------+
-# | Retrieve filepath of current playing file using cmus-remote  |
-# +--------------------------------------------------------------+
-
-
-def get_filename():
-    cmd = "cmus-remote -Q|grep file|awk '{$1=\"\"; print $0}'"
-    filename = os.popen(cmd).read().strip()
-    return filename
-
-# +-----+
-# | RUN |
-# +-----+
+        os.system(command)
 
 
 if __name__ == '__main__':
-    main(get_filename())
+    CmusNotify()
