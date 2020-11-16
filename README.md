@@ -1,4 +1,4 @@
-![notification](https://user-images.githubusercontent.com/42554663/99198852-0cae8c00-27bd-11eb-9eb1-117fb6a155b9.png)
+![notification](screenshots/example1.png)
 
 # cmus_notify
 cmus_notify is a python script which sends a notification on song change using notify-send.
