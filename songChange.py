@@ -8,14 +8,17 @@
 # usage          :insert into rc file:
 #                :set status_display_program=~/.config/cmus/songChange.py
 
-# notes          :
+# notes          : requires stagger
 # python_version :3.8.6
 # =============================================================================
 
 import os
 import stagger
 
-" send notification "
+
+# +-------------------+
+# | Send notification |
+# +-------------------+
 
 
 def notify(song, album, artist, icon='music'):
@@ -25,7 +28,9 @@ def notify(song, album, artist, icon='music'):
     os.system(command)
 
 
-" extract images from tag "
+# +-----------------------------------------------+
+# | Extract Images to display from TAG if present |
+# +-----------------------------------------------+
 
 
 def get_cover(mp3):
@@ -40,8 +45,9 @@ def get_cover(mp3):
     return icon
 
 
-" extract info from mp3 tag"
-
+# +---------------+
+# | Main function |
+# +---------------+
 
 def main(filename):
     mp3 = stagger.read_tag(filename)
@@ -50,7 +56,9 @@ def main(filename):
     notify(mp3.title, mp3.album, mp3.artist, icon)
 
 
-" retrieve filepath from cmus-remote "
+# +--------------------------------------------------------------+
+# | Retrieve filepath of current playing file using cmus-remote  |
+# +--------------------------------------------------------------+
 
 
 def get_filename():
@@ -58,8 +66,9 @@ def get_filename():
     filename = os.popen(cmd).read().strip()
     return filename
 
-
-" === RUN ==="
+# +-----+
+# | RUN |
+# +-----+
 
 
 if __name__ == '__main__':
