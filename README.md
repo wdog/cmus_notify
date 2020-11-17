@@ -29,3 +29,16 @@ Once you have requirements installed, just add this line to your `~/.config/cmus
 set status_display_program=~/.config/cmus/scripts/cmus_notify/songChange.py
 
 ```
+
+# Help
+
+```
+usage: songChange.py [-h] [-l] [-s]
+
+optional arguments:
+  -h, --help       show this help message and exit
+  -l, --lastFm     Enable LastFm cover
+  -s, --scrobbing  Enable LastFm scrobbing
+```
+
+
