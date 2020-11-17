@@ -20,7 +20,10 @@ chmod +x songChange.py
 cp secret.example.json secret.json
 ```
 
-Once you have stagger installed, just add this line to your `~/.config/cmus/rc` or `~/.config/cmus/autosave`.
+Fill the file `secret.json` with your LastFM api key, secret, username and
+password
+
+Once you have requirements installed, just add this line to your `~/.config/cmus/rc` or `~/.config/cmus/autosave`.
 
 ```
 set status_display_program=~/.config/cmus/scripts/cmus_notify/songChange.py
