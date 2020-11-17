@@ -34,7 +34,7 @@ class LFM:
     # +-----------------------------------+
 
     def get_settings(self):
-        with open('secret.js', 'r') as fi:
+        with open('secret.json', 'r') as fi:
             self.settings = json.loads(fi.read(),
                                        object_hook=self.customSecretsDecoder)
 

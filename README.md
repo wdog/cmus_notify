@@ -17,6 +17,7 @@ git clone git@github.com:wdog/cmus_notify.git
 cd cmus_notify
 pip install -r requirements.txt
 chmod +x songChange.py
+cp secret.example.json secret.json
 ```
 
 Once you have stagger installed, just add this line to your `~/.config/cmus/rc` or `~/.config/cmus/autosave`.
