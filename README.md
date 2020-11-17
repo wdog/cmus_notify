@@ -7,8 +7,12 @@ cmus_notify is a python script which sends a notification on song change using n
 
 # Installation
 
-You must have stagger in your path.
-You can install it using pip.
+### Requirements
+
+- pylast
+- stagger
+
+### Instructions
 
 ```bash
 mkdir -p ~/.config/cmus/scripts
@@ -17,6 +21,7 @@ git clone git@github.com:wdog/cmus_notify.git
 cd cmus_notify
 pip install -r requirements.txt
 chmod +x songChange.py
+chmod +x run.sh
 # optional step for LastFM
 cp secret.example.json secret.json
 ```
@@ -24,14 +29,16 @@ cp secret.example.json secret.json
 Fill the file `secret.json` with your LastFM api key, secret, username and
 password
 
-Once you have requirements installed, just add this line to your `~/.config/cmus/rc` or `~/.config/cmus/autosave`.
+Once you have requirements installed, just add this line to your `~/.config/cmus/rc`.
 
 ```
-set status_display_program=~/.config/cmus/scripts/cmus_notify/songChange.py
+set status_display_program=~/.config/cmus/scripts/cmus_notify/run.sh
 
 ```
 
 # Help
+
+change options on `run.sh` script file
 
 ```
 usage: songChange.py [-h] [-l] [-s]

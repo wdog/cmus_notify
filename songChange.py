@@ -1,4 +1,4 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 
 # title          : songChange.py
 # description    : Uses notify send for title artist and album cover
@@ -148,9 +148,9 @@ class CmusNotify:
 
     def is_running(self):
         cmd = "cmus-remote -C status |grep status | awk '{print $2}' "
-        self.is_running = os.popen(cmd).read().strip()
+        r = os.popen(cmd).read().strip()
 
-        if self.is_running == 'playing':
+        if r == 'playing':
             return True
         return False
 
@@ -167,6 +167,7 @@ class CmusNotify:
 
 
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser()
     parser.add_argument('-l', '--lastFm',
                         help='Enable LastFm cover',
@@ -175,4 +176,5 @@ if __name__ == '__main__':
                         help='Enable LastFm scrobbing',
                         action='store_true')
     args = parser.parse_args()
+
     CmusNotify(args)
