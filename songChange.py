@@ -4,7 +4,7 @@
 # description    : Uses notify send for title artist and album cover
 # author         : wdog666@gmail.com
 # date           : 20201116
-# version        : 0.2
+# version        : 0.0.2
 # notes          : requires stagger
 # python_version : 3.8.6
 # =============================================================================
