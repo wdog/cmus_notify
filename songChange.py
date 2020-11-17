@@ -5,7 +5,7 @@
 # author         : wdog666@gmail.com
 # date           : 20201116
 # version        : 0.3
-# notes          : requires stagger
+# notes          : requires stagger, pylast
 # python_version : 3.8.6
 # =============================================================================
 
