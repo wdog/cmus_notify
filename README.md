@@ -17,6 +17,7 @@ git clone git@github.com:wdog/cmus_notify.git
 cd cmus_notify
 pip install -r requirements.txt
 chmod +x songChange.py
+# optional step for LastFM
 cp secret.example.json secret.json
 ```
 
