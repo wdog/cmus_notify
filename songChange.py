@@ -14,6 +14,8 @@ import sys
 import stagger
 import requests
 import argparse
+import json
+from collections import namedtuple
 from lastfm import LFM
 import logging
 
@@ -30,37 +32,60 @@ class CmusNotify():
 
     def __init__(self, option):
 
-        logging.info('INIT')
-        logging.info(option)
-        self.filepath = None
+        #  is cmus playing?
+        if not self.is_cmus_playing():
+            sys.exit('not playing')
+
+        self.file_path = None
         self.tags = None
         self.icon = None
+        # default icon
         self.default_icon = 'music'
-
-        if not self.is_running():
-            sys.exit('not running')
-
-        logging.info('running')
-
+        # lastfm options
         self.enableScrobble = option.scrobbing
         self.enableLastFm = option.lastfm
 
-        logging.info('get_filename_path')
-        self.get_filename_path()
+        # get mp3 track file path
+        self.get_file_path()
 
-        logging.info('get_tags')
+        # extract tags from file
         self.get_tags()
 
+        # lastfm connect if requested
         if (self.enableLastFm):
-            logging.info('enableLastFm')
-            self.lfm = LFM()
+            self.get_lastfm_settings()
+            self.lfm = LFM(self.lastfm_settings)
 
-        logging.info('extract_cover')
+        # get cover from various sources
         self.extract_cover()
 
-        " scrobble lastfm "
+        # scrobble lastfm is requested
         if (self.enableLastFm and self.enableScrobble):
-            LFM().scrobble(self.tags.artist, self.tags.title)
+            self.lfm.scrobble(self.tags.artist, self.tags.title)
+
+    # +----------------------------------------+
+    # | Convert Json to Object - hook function |
+    # +----------------------------------------+
+
+    def cSecretsDecoder(self, secretsDict):
+        return namedtuple('X', secretsDict.keys())(*secretsDict.values())
+
+    # +-------------------------------------------+
+    # | Get lastFm settings from secret.json file |
+    # +-------------------------------------------+
+
+    def get_lastfm_settings(self):
+        try:
+            secret_file = "secret.json"
+            secret_path = os.path.dirname(os.path.realpath(__file__))
+
+            secret = os.path.join(secret_path, secret_file)
+            with open(secret, 'r') as fi:
+                self.lastfm_settings = json.loads(fi.read(),
+                                                  object_hook=self.cSecretsDecoder)
+        except Exception as e:
+            logging.critical(str(e))
+            sys.exit('no credential')
 
     # +--------------------+
     # | Write Icon to file |
@@ -85,11 +110,13 @@ class CmusNotify():
     # +----------------------+
 
     def get_cover_from_folder(self):
-        albums = ['album.jpg', 'folder.jpg', 'folder.jpg']
-        for album in albums:
-            filealbum = os.path.join(self.album_path, album)
-            if os.path.isfile(filealbum):
-                self.icon = filealbum
+        possible_files = ['album.jpg', 'folder.jpg', 'folder.jpg']
+        for possible_file in possible_files:
+            file_cover = os.path.join(self.album_path, possible_file)
+            # file exist?
+            if os.path.isfile(file_cover):
+                # first wins
+                self.icon = file_cover
                 break
 
     # +----------------------+
@@ -137,22 +164,22 @@ class CmusNotify():
     # +------------------------------+
 
     def get_tags(self):
-        self.tags = stagger.read_tag(self.filepath)
+        self.tags = stagger.read_tag(self.file_path)
 
     # +----------------------------------+
     # | Get Coplete path of current song |
     # +----------------------------------+
 
-    def get_filename_path(self):
+    def get_file_path(self):
         cmd = "cmus-remote -Q|grep file|awk '{$1=\"\"; print $0}'"
-        self.filepath = os.popen(cmd).read().strip()
-        self.album_path = os.path.dirname(self.filepath)
+        self.file_path = os.popen(cmd).read().strip()
+        self.album_path = os.path.dirname(self.file_path)
 
     # +--------------------------+
-    # | Check is Cmus is running |
+    # | Check is Cmus is playing |
     # +--------------------------+
 
-    def is_running(self):
+    def is_cmus_playing(self):
         cmd = "cmus-remote -C status |grep status | awk '{print $2}' "
         r = os.popen(cmd).read().strip()
 
