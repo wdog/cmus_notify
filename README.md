@@ -10,13 +10,13 @@ cmus_notify is a python script which sends a notification on song change using n
 You must have stagger in your path.
 You can install it using pip.
 
-```
-$ mkdir -p ~/.config/cmus/script
-$ git clone git@github.com:wdog/cmus_notify.git
-$ cd cmus_notify
-$ pip install -r requirements.txt
-$ chmod +x ~/.config/cmus/scripts/cmus_notify/songChange.py
-
+```bash
+mkdir -p ~/.config/cmus/scripts
+cd ~/.config/cmus/scripts
+git clone git@github.com:wdog/cmus_notify.git
+cd cmus_notify
+pip install -r requirements.txt
+chmod +x songChange.py
 ```
 
 Once you have stagger installed, just add this line to your `~/.config/cmus/rc` or `~/.config/cmus/autosave`.
