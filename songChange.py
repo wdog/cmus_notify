@@ -15,18 +15,14 @@ import stagger
 import requests
 import argparse
 from lastfm import LFM
+import logging
 
 
 " TODO "
 " write cover in folder only if not exists "
 
 
-class CmusNotify:
-
-    filepath = None
-    tags = None
-    icon = None
-    default_icon = 'music'
+class CmusNotify():
 
     # +------+
     # | init |
@@ -34,26 +30,36 @@ class CmusNotify:
 
     def __init__(self, option):
 
+        logging.info('INIT')
+        logging.info(option)
+        self.filepath = None
+        self.tags = None
+        self.icon = None
+        self.default_icon = 'music'
+
         if not self.is_running():
-            sys.exit()
+            sys.exit('not running')
 
-        self.enableScroble = option.scrobbing
-        self.enableLastFm = option.lastFm
+        logging.info('running')
 
+        self.enableScrobble = option.scrobbing
+        self.enableLastFm = option.lastfm
+
+        logging.info('get_filename_path')
         self.get_filename_path()
 
+        logging.info('get_tags')
         self.get_tags()
 
         if (self.enableLastFm):
+            logging.info('enableLastFm')
             self.lfm = LFM()
 
+        logging.info('extract_cover')
         self.extract_cover()
 
-        self.notify(self.tags.title, self.tags.album,
-                    self.tags.artist, self.icon)
-
         " scrobble lastfm "
-        if (self.enableLastFm and self.enableScroble):
+        if (self.enableLastFm and self.enableScrobble):
             LFM().scrobble(self.tags.artist, self.tags.title)
 
     # +--------------------+
@@ -120,7 +126,7 @@ class CmusNotify:
         if self.icon is None:
             self.get_cover_from_tag()
 
-        if self.icon is None and self.enableLastFm and self.enableScroble:
+        if self.icon is None and self.enableLastFm and self.enableScrobble:
             self.get_cover_from_lastfm()
 
         if self.icon is None:
@@ -158,23 +164,27 @@ class CmusNotify:
     # | Call system notify-send |
     # +-------------------------+
 
-    def notify(self, song, album, artist, icon='music'):
+    def notify(self):
         command = f'''
-        notify-send -i "{icon}" "🎶 {song}" \
-        "\n<i>💿 {album}</i>\n<b>🕺 {artist}</b>"
+        notify-send -i "{self.icon}" "🎶 {self.tags.title}" \
+        "\n<i>💿 {self.tags.album}</i>\n<b>🕺 {self.tags.artist}</b>"
 '''
         os.system(command)
 
 
 if __name__ == '__main__':
+    # script_path = os.path.dirname(os.path.realpath(__file__))
+    logging.basicConfig(filename="/tmp/app.log", format='%(asctime)s - %(name)s - '
+                        '%(levelname)s: %(message)s', datefmt='%H:%M:%S',
+                        level=logging.DEBUG)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-l', '--lastFm',
+    parser.add_argument('-l', '--lastfm',
                         help='Enable LastFm cover',
                         action='store_true')
     parser.add_argument('-s', '--scrobbing',
                         help='Enable LastFm scrobbing',
                         action='store_true')
     args = parser.parse_args()
-
-    CmusNotify(args)
+    cmn = CmusNotify(args)
+    cmn.notify()

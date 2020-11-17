@@ -1,4 +1,4 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 
 # import sys
 import pylast
@@ -6,13 +6,17 @@ import time
 import datetime
 import json
 from collections import namedtuple
+import logging
+import os
 
 
 class LFM:
     """last fm connection"""
     def __init__(self):
         self.get_settings()
+        logging.info('connected')
         self.connect()
+        logging.info('connected')
         self.track = None
         self.artist = None
 
@@ -26,7 +30,7 @@ class LFM:
     # | Convert Json to Object - hook function |
     # +----------------------------------------+
 
-    def customSecretsDecoder(self, secretsDict):
+    def cSecretsDecoder(self, secretsDict):
         return namedtuple('X', secretsDict.keys())(*secretsDict.values())
 
     # +-----------------------------------+
@@ -34,9 +38,16 @@ class LFM:
     # +-----------------------------------+
 
     def get_settings(self):
-        with open('secret.json', 'r') as fi:
-            self.settings = json.loads(fi.read(),
-                                       object_hook=self.customSecretsDecoder)
+        logging.info('connected')
+        try:
+
+            script_path = os.path.dirname(os.path.realpath(__file__))
+            secret = os.path.join(script_path, "../secret.json")
+            with open(secret, 'r') as fi:
+                self.settings = json.loads(fi.read(),
+                                           object_hook=self.cSecretsDecoder)
+        except Exception as e:
+            logging.info(str(e))
 
     def connect(self):
         password_hash = pylast.md5(self.settings.password)

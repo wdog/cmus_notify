@@ -1,3 +1,4 @@
 #!/bin/bash
 
-./songChange.py -l -s
+~/.config/cmus/scripts/cmus_notify/songChange.py -l -s
+
