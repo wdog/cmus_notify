@@ -11,16 +11,17 @@ You must have stagger in your path.
 You can install it using pip.
 
 ```
-$ pip install --user stagger
-$ mkdir -p ~/.config/cmus/scripts
-$ curl -o ~/.config/cmus/scripts/songChange.py https://raw.githubusercontent.com/wdog/cmus_notify/main/songChange.py
-$ chmod +x ~/.config/cmus/scripts/songChange.py
+$ mkdir -p ~/.config/cmus/script
+$ git clone git@github.com:wdog/cmus_notify.git
+$ cd cmus_notify
+$ pip install -r requirements.txt
+$ chmod +x ~/.config/cmus/scripts/cmus_notify/songChange.py
 
 ```
 
 Once you have stagger installed, just add this line to your `~/.config/cmus/rc` or `~/.config/cmus/autosave`.
 
 ```
-set status_display_program=~/.config/cmus/scripts/songChange.py
+set status_display_program=~/.config/cmus/scripts/cmus_notify/songChange.py
 
 ```
