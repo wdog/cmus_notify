@@ -10,8 +10,10 @@
 # =============================================================================
 
 import os
+import sys
 import stagger
 import requests
+import argparse
 from lastfm import LFM
 
 
@@ -20,22 +22,85 @@ from lastfm import LFM
 
 
 class CmusNotify:
-    def __init__(self):
+
+    filepath = None
+    tags = None
+    icon = None
+    default_icon = 'music'
+
+    # +------+
+    # | init |
+    # +------+
+
+    def __init__(self, option):
+
+        if not self.is_running():
+            sys.exit()
+
+        self.enableScroble = option.scrobbing
+        self.enableLastFm = option.lastFm
+
         self.get_filename_path()
+
         self.get_tags()
-        self.lfm = LFM()
+
+        if (self.enableLastFm):
+            self.lfm = LFM()
+
         self.extract_cover()
 
         self.notify(self.tags.title, self.tags.album,
                     self.tags.artist, self.icon)
 
         " scrobble lastfm "
-        r = LFM().scrobble(self.tags.artist, self.tags.title)
-        print(r)
+        if (self.enableLastFm and self.enableScroble):
+            LFM().scrobble(self.tags.artist, self.tags.title)
 
-    def write_icon(self, source):
-        with open(self.icon, "wb") as outfile:
+    # +--------------------+
+    # | Write Icon to file |
+    # +--------------------+
+
+    def write_icon(self, icon_file, source):
+        with open(icon_file, "wb") as outfile:
             outfile.write(source)
+
+    # +--------------------+
+    # | Get Icon from tags |
+    # +--------------------+
+
+    def get_cover_from_tag(self):
+        if (self.tags.picture):
+            self.icon = os.path.join(self.album_path, "album.jpg")
+            data = self.tags[stagger.id3.APIC][0].data
+            self.write_icon(self.icon, data)
+
+    # +----------------------+
+    # | Get Icon from Folder |
+    # +----------------------+
+
+    def get_cover_from_folder(self):
+        albums = ['album.jpg', 'folder.jpg', 'folder.jpg']
+        for album in albums:
+            filealbum = os.path.join(self.album_path, album)
+            if os.path.isfile(filealbum):
+                self.icon = filealbum
+                break
+
+    # +----------------------+
+    # | Get Icon From LastFM |
+    # +----------------------+
+
+    def get_cover_from_lastfm(self):
+        try:
+            url = self.lfm.get_cover(self.tags.artist,
+                                     self.tags.album)
+            r = requests.get(url)
+            self.icon = os.path.join(self.album_path, "album.jpg")
+            self.write_icon(self.icon, r.content)
+            print('got from lastFM')
+
+        except Exception:
+            pass
 
     # +----------------------------+
     # | Extract Image from mp3 tag |
@@ -44,35 +109,22 @@ class CmusNotify:
     def extract_cover(self):
 
         """
-        1) get image from tag
-        2) get image from folder (cover.jpg or album.jpg or ???)
-        3) get from lasastfm
+        1) get image from folder (cover.jpg or album.jpg ...)
+        2) get image from tag -> save to album folder
+        3) get from lasastfm -> save to album folder
         4) default image
         """
 
-        tmp_image = '/tmp/xyz.jpg'
+        self.get_cover_from_folder()
 
-        if (self.tags.picture):
-            data = self.tags[stagger.id3.APIC][0].data
-            self.icon = tmp_image
-            self.write_icon(data)
-        else:
-            self.icon = 'music'
+        if self.icon is None:
+            self.get_cover_from_tag()
 
-        self.icon = 'music'
-        if (self.icon == 'music'):
-            try:
-                url = self.lfm.get_cover(self.tags.artist,
-                                         self.tags.album)
-                r = requests.get(url)
-                self.icon = tmp_image
-                " TODO md5 of current file - do not download again "
-                print('lastFm cover')
-                self.write_icon(r.content)
+        if self.icon is None and self.enableLastFm and self.enableScroble:
+            self.get_cover_from_lastfm()
 
-            except Exception as e:
-                print(e)
-                pass
+        if self.icon is None:
+            self.icon = self.default_icon
 
     # +------------------------------+
     # | Get Object Tag from filepath |
@@ -88,6 +140,19 @@ class CmusNotify:
     def get_filename_path(self):
         cmd = "cmus-remote -Q|grep file|awk '{$1=\"\"; print $0}'"
         self.filepath = os.popen(cmd).read().strip()
+        self.album_path = os.path.dirname(self.filepath)
+
+    # +--------------------------+
+    # | Check is Cmus is running |
+    # +--------------------------+
+
+    def is_running(self):
+        cmd = "cmus-remote -C status |grep status | awk '{print $2}' "
+        self.is_running = os.popen(cmd).read().strip()
+
+        if self.is_running == 'playing':
+            return True
+        return False
 
     # +-------------------------+
     # | Call system notify-send |
@@ -102,4 +167,12 @@ class CmusNotify:
 
 
 if __name__ == '__main__':
-    CmusNotify()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-l', '--lastFm',
+                        help='Enable LastFm cover',
+                        action='store_true')
+    parser.add_argument('-s', '--scrobbing',
+                        help='Enable LastFm scrobbing',
+                        action='store_true')
+    args = parser.parse_args()
+    CmusNotify(args)

@@ -54,10 +54,10 @@ class LFM:
                               timestamp=unix_timestamp)
 
         # Confirm
-        print("Confirmation from Last.fm:")
-        recent_tracks = self.network.get_user(self.settings.username) \
-                            .get_recent_tracks(limit=1)
-        print(recent_tracks)
+        # print("Confirmation from Last.fm:")
+        # recent_tracks = self.network.get_user(self.settings.username) \
+        # .get_recent_tracks(limit=1)
+        # print(recent_tracks)
 
     def get_cover(self, artist, album):
         album = self.network.get_album(artist, album)
