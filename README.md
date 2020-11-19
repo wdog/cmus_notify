@@ -27,7 +27,7 @@ cp secret.example.json secret.json
 ```
 
 Fill the file `secret.json` with your LastFM api key, secret, username and
-password
+password. Only `api key - secret` or `username - password` are required.
 
 Once you have requirements installed, just add this line to your `~/.config/cmus/rc`.
 
