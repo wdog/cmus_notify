@@ -68,7 +68,7 @@ class CmusNotify():
     # +----------------------------------------+
 
     def cSecretsDecoder(self, secretsDict):
-        return namedtuple('X', secretsDict.keys())(*secretsDict.values())
+        return namedtuple('LastFMSettings', secretsDict.keys())(*secretsDict.values())
 
     # +-------------------------------------------+
     # | Get lastFm settings from secret.json file |
@@ -198,6 +198,10 @@ class CmusNotify():
 '''
         os.system(command)
 
+# +------+
+# | RUN  |
+# +------+
+
 
 if __name__ == '__main__':
     # script_path = os.path.dirname(os.path.realpath(__file__))
@@ -213,5 +217,9 @@ if __name__ == '__main__':
                         help='Enable LastFm scrobbing',
                         action='store_true')
     args = parser.parse_args()
+
+    if (args.scrobbing and not args.lastfm):
+        sys.exit('Scrobbling -s requires LastFM -l')
+
     cmn = CmusNotify(args)
     cmn.notify()

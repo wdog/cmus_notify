@@ -4,13 +4,19 @@
 import pylast
 import time
 import datetime
+import sys
 
 
 class LFM:
     """last fm connection"""
     def __init__(self, settings):
+        self.network = None
         self.settings = settings
-        self.connect()
+        try:
+            self.connect()
+        except ConnectionError as err:
+            sys.exit(err)
+
         self.track = None
         self.artist = None
 
@@ -25,19 +31,36 @@ class LFM:
     # +----------------------+
 
     def connect(self):
-        password_hash = pylast.md5(self.settings.password)
 
-        self.network = pylast.LastFMNetwork(api_key=self.settings.key,
-                                            api_secret=self.settings.secret,
-                                            username=self.settings.username,
-                                            password_hash=password_hash)
+        try:
+            if hasattr(self.settings, 'key') and hasattr(self.settings, 'secret') and \
+               hasattr(self.settings, 'username') and hasattr(self.settings, 'password'):
+
+                password_hash = pylast.md5(self.settings.password)
+                opts = {'api_key': self.settings.key,
+                        'api_secret': self.settings.secret,
+                        'username': self.settings.username,
+                        'password_hash': password_hash}
+            self.network = pylast.LastFMNetwork(**opts)
+            print(self.network)
+        except Exception as e:
+            raise ConnectionError('Connection Error')
+
+    # +----------+
+    # | SCROBBLE |
+    # +----------+
 
     def scrobble(self, artist, track):
         # Get UNIX timestamp
         unix_timestamp = int(time.mktime(datetime.datetime.now().timetuple()))
-        self.network.scrobble(artist=artist,
-                              title=track,
-                              timestamp=unix_timestamp)
+
+        try:
+            self.network.scrobble(artist=artist,
+                                  title=track,
+                                  timestamp=unix_timestamp)
+        except Exception as e:
+            print(e)
+            raise e
 
     def get_cover(self, artist, album):
         album = self.network.get_album(artist, album)
