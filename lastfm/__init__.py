@@ -43,7 +43,7 @@ class LFM:
                         'password_hash': password_hash}
             self.network = pylast.LastFMNetwork(**opts)
             print(self.network)
-        except Exception as e:
+        except Exception:
             raise ConnectionError('Connection Error')
 
     # +----------+
@@ -61,6 +61,10 @@ class LFM:
         except Exception as e:
             print(e)
             raise e
+
+    # +-----------------------+
+    # | Get Cover from lastfm |
+    # +-----------------------+
 
     def get_cover(self, artist, album):
         album = self.network.get_album(artist, album)
