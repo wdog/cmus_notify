@@ -42,7 +42,6 @@ class LFM:
                         'username': self.settings.username,
                         'password_hash': password_hash}
             self.network = pylast.LastFMNetwork(**opts)
-            print(self.network)
         except Exception as e:
             raise ConnectionError('Connection Error')
 
@@ -59,7 +58,6 @@ class LFM:
                                   title=track,
                                   timestamp=unix_timestamp)
         except Exception as e:
-            print(e)
             raise e
 
     def get_cover(self, artist, album):
