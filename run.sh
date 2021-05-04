@@ -1,4 +1,9 @@
 #!/bin/bash
 
-~/.config/cmus/scripts/cmus_notify/songChange.py -l -s
+
+
+DIR=~/.config/cmus/scripts/cmus_notify/
+cd $DIR
+source venv/bin/activate
+$DIR/songChange.py -l -s
 

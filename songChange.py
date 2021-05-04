@@ -100,6 +100,7 @@ class CmusNotify():
     # +--------------------+
 
     def get_cover_from_tag(self):
+        print("searching in tags")
         if (self.tags.picture):
             self.icon = os.path.join(self.album_path, "album.jpg")
             data = self.tags[stagger.id3.APIC][0].data
@@ -110,13 +111,15 @@ class CmusNotify():
     # +----------------------+
 
     def get_cover_from_folder(self):
-        possible_files = ['album.jpg', 'folder.jpg', 'folder.jpg']
+        print("searching in folder")
+        possible_files = ['album.jpg', 'folder.jpg', 'cover.jpg']
         for possible_file in possible_files:
             file_cover = os.path.join(self.album_path, possible_file)
             # file exist?
             if os.path.isfile(file_cover):
                 # first wins
                 self.icon = file_cover
+                print("found in folder " + self.icon)
                 break
 
     # +----------------------+
@@ -124,6 +127,7 @@ class CmusNotify():
     # +----------------------+
 
     def get_cover_from_lastfm(self):
+        print("searching from lastfm")
         try:
             url = self.lfm.get_cover(self.tags.artist,
                                      self.tags.album)
@@ -159,6 +163,7 @@ class CmusNotify():
         if self.icon is None:
             self.icon = self.default_icon
 
+        print("using: " + self.icon)
     # +------------------------------+
     # | Get Object Tag from filepath |
     # +------------------------------+
@@ -192,9 +197,10 @@ class CmusNotify():
     # +-------------------------+
 
     def notify(self):
+        print("notify with: " + self.icon)
         command = f'''
-        notify-send -i "{self.icon}" "🎶 {self.tags.title}" \
-        "\n<i>💿 {self.tags.album}</i>\n<b>🕺 {self.tags.artist}</b>"
+        notify-send -i \"{self.icon}\" "{self.tags.title}" \
+        "<i>{self.tags.album}</i>\n<b>{self.tags.artist}</b>"
 '''
         os.system(command)
 
