@@ -4,6 +4,7 @@
 import pylast
 import time
 import datetime
+import logging
 import sys
 
 
@@ -58,7 +59,8 @@ class LFM:
                                   title=track,
                                   timestamp=unix_timestamp)
         except Exception as e:
-            raise e
+            logging.critical(str(e))
+            sys.exit('no scrobble')
 
     # +-----------------------+
     # | Get Cover from lastfm |
